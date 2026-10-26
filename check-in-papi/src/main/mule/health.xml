@@ -13,6 +13,8 @@
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="  http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd  ">
   <import file="health-common.xml" doc:name="Import health-common.xml"/>
   <sub-flow name="check-all-dependencies-are-alive">
-    <logger/>
-  </sub-flow>
+	  <http:request method="GET" url="https://tngaa-flights-management-sapi-dev-9yj2rh.rajrd4-2.usa-e1.cloudhub.io/alive" followRedirects="true" doc:name="Flights Management SAPI" />
+	  <http:request method="GET" url="https://tngaa-passenger-data-sapi-dev-9yj2rh.rajrd4-2.usa-e1.cloudhub.io/alive" followRedirects="true" doc:name="Passenger Data SAPI" />
+	  <http:request method="GET" url="https://tngaa-paypal-sapi-dev-9yj2rh.rajrd4-2.usa-e1.cloudhub.io/alive" followRedirects="true" doc:name="Paypal SAPI" />
+	</sub-flow>
 </mule>
