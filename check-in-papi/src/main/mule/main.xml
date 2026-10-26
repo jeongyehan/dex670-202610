@@ -15,7 +15,8 @@
     <tracing:set-logging-variable variableName="PNR" value="#[vars.PNR default '']" doc:name="Set PNR tracing var"/>
     <logger level="INFO" message="#['Checking-in by PNR: ' ++ (vars.PNR default '')]" doc:name="START"/>
     <set-variable variableName="checkIn" value="#[payload]" doc:name="checkIn"/>
-    <flow-ref name="check-in-flights-management" doc:name="check-in-flights-management"/>
+    <flow-ref doc:name="validate-ticket-passport-matches" doc:id="8ecd0963-fb66-4d32-aeb4-96d94887b1b3" name="validate-ticket-passport-matches"/>
+		<flow-ref name="check-in-flights-management" doc:name="check-in-flights-management"/>
     <flow-ref name="register-passenger-data" doc:name="register-passenger-data"/>
     <flow-ref name="create-payment-for-bags" doc:name="create-payment-for-bags"/>
     <ee:transform>
@@ -30,9 +31,59 @@
     </ee:transform>
     <logger level="INFO" message="Checked-in by PNR" doc:name="END"/>
   </flow>
+  <flow name="validate-ticket-passport-matches" doc:id="c50751b5-7885-4906-baa9-01a75586bb49">
+	  <flow-ref name="get-ticket-by-pnr" doc:name="get-ticket-by-pnr"/>
+	  <choice>
+	    <when expression="#[not vars.ticket.ticketHolderLastName == vars.checkIn.lastName]">
+	      <raise-error type="APP:LASTNAME_MISMATCH" doc:name="APP:LASTNAME_MISMATCH"/>
+	    </when>
+	  </choice>
+	  <flow-ref name="get-passenger-data-by-passport" doc:name="get-passenger-data-by-passport"/>
+	  <choice>
+	    <when expression="#[not vars.passenger.lastName == vars.checkIn.lastName]">
+	      <raise-error type="APP:LASTNAME_MISMATCH" doc:name="APP:LASTNAME_MISMATCH"/>
+	    </when>
+	  </choice>
+	</flow>
+	<flow name="get-ticket-by-pnr">
+	  <http:request config-ref="flightsManagementSapiConfig" method="GET" path="/tickets/{PNR}" target="ticket"
+	        doc:name="FMS Get Ticket">
+	    <http:uri-params><![CDATA[#[output application/java
+	---
+	{
+	    "PNR" : vars.PNR
+	}]]]></http:uri-params>
+	  </http:request>
+	</flow>
+	<flow name="get-passenger-data-by-passport">
+	  <http:request target="passenger" config-ref="passengerDataSapiConfig" method="GET" path="/passengers" doc:name="Passenger API Get Passenger">
+	    <http:query-params><![CDATA[#[output application/java
+	---
+	{
+	    "passportNo" : vars.ticket.ticketHolderPassPortNo
+	}]]]></http:query-params>
+	  </http:request>
+	</flow>
   <flow name="check-in-flights-management">
-    <logger/>
-  </flow>
+	  <ee:transform>
+	    <ee:message>
+	      <ee:set-payload><![CDATA[%dw 2.0
+	output application/json
+	---
+	{
+	    lastName: vars.checkIn.lastName,
+	    numBags:  vars.checkIn.numBags
+	}]]></ee:set-payload>
+	    </ee:message>
+	  </ee:transform>
+	  <http:request config-ref="flightsManagementSapiConfig" method="PUT" path="/tickets/{PNR}/checkin">
+	    <http:uri-params><![CDATA[#[output application/java
+	---
+	{
+	    "PNR" : vars.PNR
+	}]]]></http:uri-params>
+	  </http:request>
+	</flow>
   <flow name="register-passenger-data">
     <logger/>
   </flow>
