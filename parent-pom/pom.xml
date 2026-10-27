@@ -12,12 +12,12 @@
     <!-- students: replace with your AP org ID -->
     <groupId>b4840237-a86b-4fa4-b4ce-bebf5b0daf00</groupId>
     <artifactId>solutions-bom</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <relativePath>../bom/pom.xml</relativePath>
   </parent>
   <artifactId>solutions-parent-pom</artifactId>
   <groupId>b4840237-a86b-4fa4-b4ce-bebf5b0daf00</groupId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
   <!-- IMPORTANT: Due to a limitation in MUnit, this file must be installed into the local Maven repo after every change: -->
   <!-- mvn -f pom.xml install:install-file -Dfile=pom.xml -DpomFile=pom.xml -->
