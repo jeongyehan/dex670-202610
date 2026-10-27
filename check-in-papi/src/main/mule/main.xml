@@ -22,11 +22,13 @@
     <ee:transform>
       <ee:message>
         <ee:set-payload><![CDATA[%dw 2.0
-                output application/json
-                ---
-                {
-                  paymentID: "PAY-1AKD7482FAB9STATKO"
-                }]]></ee:set-payload>
+output application/json
+var paypalReturn = payload
+---
+{
+    paymentID: paypalReturn.paymentID
+}
+]]></ee:set-payload>
       </ee:message>
     </ee:transform>
     <logger level="INFO" message="Checked-in by PNR" doc:name="END"/>
@@ -83,18 +85,62 @@
 	    "PNR" : vars.PNR
 	}]]]></http:uri-params>
 	  </http:request>
+	  <error-handler>
+		  <on-error-continue>
+		    <raise-error type="APP:CANT_UPDATE_CHECKINS" doc:name="APP:CANT_UPDATE_CHECKINS"/>
+		  </on-error-continue>
+		</error-handler>
 	</flow>
   <flow name="register-passenger-data">
-    <logger/>
-  </flow>
+	  <ee:transform>
+	    <ee:message>
+	      <ee:set-payload><![CDATA[%dw 2.0
+	output application/json
+	---
+	{
+	    "date_checkin": now() >> "UTC",
+	    "destination":  vars.ticket.destination,
+	    "flight_date":  vars.ticket.flightDate,
+	    "flight_no":    vars.ticket.flightNo,
+	    "origin":       vars.ticket.origin
+	}]]></ee:set-payload>
+	    </ee:message>
+	  </ee:transform>
+	  <http:request config-ref="passengerDataSapiConfig" method="POST" path="/passengers/{LNO}/flights"
+	        doc:name="POST /passengers/{LNO}/flights">
+	    <http:uri-params><![CDATA[#[output application/java
+	---
+	{
+	    "LNO" : vars.passenger.loyaltyNo
+	}]]]></http:uri-params>
+	  </http:request>
+	  <error-handler>
+	    <on-error-continue>
+	      <raise-error type="APP:CANT_CREATE_PASSENGER_FLIGHT" doc:name="APP:CANT_CREATE_PASSENGER_FLIGHT" />
+	    </on-error-continue>
+	  </error-handler>
+	</flow> 
   <flow name="create-payment-for-bags">
-    <logger/>
-    <error-handler>
-      <on-error-continue>
-        <raise-error type="APP:CANT_CREATE_PAYMENT"/>
-      </on-error-continue>
-    </error-handler>
-  </flow>
+	  <ee:transform>
+	    <ee:message>
+	      <ee:set-payload><![CDATA[%dw 2.0
+	output application/json
+	var numBags = vars.checkIn.numBags
+	var bagRate = 33.3
+	---
+	{
+	    description: "Check-In of $(numBags) bags at USD $(bagRate) each.",
+	    amount:      bagRate*numBags
+	}]]></ee:set-payload>
+	    </ee:message>
+	  </ee:transform>
+	  <http:request config-ref="paypalSapiConfig" method="POST" path="/payments" doc:name="POST /payments" />
+	  <error-handler>
+	    <on-error-continue>
+	      <raise-error type="APP:CANT_CREATE_PAYMENT" doc:name="APP:CANT_CREATE_PAYMENT" />
+	    </on-error-continue>
+	  </error-handler>
+	</flow>
   <flow name="payment-approval-by-pnr">
     <logger level="INFO" message="#['Approving payment by PNR: ' ++ (vars.PNR default '')]" doc:name="START"/>
     <flow-ref name="update-approvals" doc:name="update-approvals"/>

@@ -44,6 +44,12 @@
       </ee:variables>
     </ee:transform>
     <flow-ref name="check-in-by-pnr" doc:name="check-in-by-pnr"/>
+    <error-handler>
+		  <on-error-continue type="APP:LASTNAME_MISMATCH">
+		    <set-payload value='#[output application/json --- {message: "Invalid passenger name record or bad data uploaded."}]' doc:name='"Invalid passenger name record or bad data uploaded."'/>
+		    <set-variable variableName="httpStatus" value="400" doc:name="httpStatus 400"/>
+		  </on-error-continue>
+		</error-handler> 
   </flow>
   <flow name="put:\tickets\(PNR)\paymentApproval:application\json:apiConfig">
     <ee:transform>
