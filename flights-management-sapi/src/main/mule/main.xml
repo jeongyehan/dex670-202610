@@ -137,6 +137,24 @@ http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/cu
 	  <logger level="INFO" message="Received Cancellation Notification" doc:name="Received Cancellation Notification" />
 		<vm:publish queueName="flight-cancel-notifs-q" doc:name="flight-cancel-notifs-q" doc:id="2bc83bb9-d8e7-4f70-a55d-95cc92efa6b0" config-ref="vmConfig"/>
 	</flow>
+	<flow name="deliver-flight-cancelled-event">
+	  <vm:listener queueName="flight-cancel-notifs-q" config-ref="vmConfig" doc:name="flight-cancel-notifs-q" transactionalAction="ALWAYS_BEGIN">
+			<redelivery-policy maxRedeliveryCount="3" idExpression="#[correlationId]" />
+		</vm:listener>
+	  <logger level="INFO" message="Received" />
+		<ee:transform doc:name="Transform Message" doc:id="5a6f73bd-9605-4102-a810-f32288a66b40" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    pnr: payload.CancellationNotification.PNR, 
+    lastNameOfPassenger: payload.CancellationNotification.PassengerLastName
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
   <flow name="register-callback">
 	  <scheduler>
 	    <scheduling-strategy>
