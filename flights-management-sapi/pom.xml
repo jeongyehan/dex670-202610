@@ -38,6 +38,11 @@
 	</build>
 	<dependencies>
 		<dependency>
+		  <groupId>com.mulesoft.connectors</groupId>
+		  <artifactId>anypoint-mq-connector</artifactId>
+		  <classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
 		  <groupId>org.mule.connectors</groupId>
 		  <artifactId>mule-vm-connector</artifactId>
 		  <classifier>mule-plugin</classifier>

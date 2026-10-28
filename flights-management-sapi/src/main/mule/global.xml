@@ -10,10 +10,11 @@
   a copy of which has been included with this distribution in the LICENSE.txt file.
   #L%
   -->
-<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
-	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<mule xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd   http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd   http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd   http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd  http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd  http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd    http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd">
   <global-property name="env" value="dev" doc:name="Default env to dev"/>
   <!-- 1st def of a property is preserved, so env-dependent takes priority over env-independent -->
   <configuration-properties file="${env}-properties.yaml" doc:name="Env Config Props"/>
@@ -49,4 +50,7 @@ http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/
 	    <vm:queue queueName="flight-cancel-notifs-dlq" queueType="PERSISTENT" maxOutstandingMessages="1000" />
 	  </vm:queues>
 	</vm:config>
+	<anypoint-mq:config name="amqConfig">
+	  <anypoint-mq:connection clientId="f129bde413c54bc989d68e58b6ad4553" clientSecret="0D98C36198c24E8CA74d2c2b1A3C8390" url="https://mq-ap-northeast-1.anypoint.mulesoft.com/api/v1/organizations/93853e26-66b4-4720-959e-0669221d7d14/environments/359d3f1f-6a59-44ff-88ce-1b192d90f46b" />
+	</anypoint-mq:config>
 </mule>

@@ -69,3 +69,5 @@
 - cd $PROJECT_HOME/apps-commons
 - mvn deploy -f pom.xml
 - curl -ik -H "Content-Type:text/xml" -d "<CancellationNotification><PNR>PNR123</PNR><PassengerLastName>Mule</PassengerLastName></CancellationNotification>" https://localhost:8081/api/cancelFlight
+- curl -ik -H "Content-Type:text/plain" -d "invalid content type and content" https://localhost:8081/api/cancelFlight
+- curl -ik -H "Content-Type:text/xml" -d "<CancellationNotification><PNR>DEX670-202610</PNR><PassengerLastName>Jeong</PassengerLastName></CancellationNotification>" https://localhost:8081/api/cancelFlight
