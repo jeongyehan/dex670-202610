@@ -74,4 +74,7 @@
 - cp -r $STUDENT_FILE/walkthroughs/devint/module02/wt2-4_starter/mobile-notifications-eapp $PROJECT_HOME/.
 - cd $PROJECT_HOME/mobile-notifications-eapp
 - mvn clean verify -U -Dencrypt.key=secure12345 -DskipTests=true
+- curl -ik -H "Content-Type:text/xml" -d "<CancellationNotification><PNR>PNR123</PNR><PassengerLastName>Mule</PassengerLastName></CancellationNotification>" https://localhost:8081/api/cancelFlight
+- curl -ik -H "Content-Type:text/plain" -d "invalid content type" https://localhost:8081/api/cancelFlight
+- curl -ik -H "Content-Type:text/xml" -d " " https://localhost:8081/api/cancelFlight
 
