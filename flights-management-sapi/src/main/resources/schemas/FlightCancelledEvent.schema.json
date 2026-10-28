@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "pnr": {
+      "type": "string"
+    },
+    "lastNameOfPassenger": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "pnr",
+    "lastNameOfPassenger"
+  ]
+}
