@@ -16,14 +16,33 @@
     <logger level="INFO" message="#['Checking-in by PNR: ' ++ (vars.PNR default '')]" doc:name="START"/>
     <set-variable variableName="checkIn" value="#[payload]" doc:name="checkIn"/>
     <flow-ref doc:name="validate-ticket-passport-matches" doc:id="8ecd0963-fb66-4d32-aeb4-96d94887b1b3" name="validate-ticket-passport-matches"/>
-		<flow-ref name="check-in-flights-management" doc:name="check-in-flights-management"/>
-    <flow-ref name="register-passenger-data" doc:name="register-passenger-data"/>
-    <flow-ref name="create-payment-for-bags" doc:name="create-payment-for-bags"/>
-    <ee:transform>
+		<set-variable value="#[['check-in-flights-management-compensate', 'register-passenger-data-compensate', 'create-payment-for-bags-compensate']]" doc:name="allCompensationFlows" doc:id="bbee16d7-ae2f-4953-825e-48ba2647238c" variableName="allCompensationFlows"/>
+		<try doc:name="Try" doc:id="d320abcb-b24b-43d3-99a2-164187483464" >
+			<scatter-gather doc:name="Scatter-Gather" doc:id="32ebc2fc-1c86-4019-b0d3-988fe9b63d0a">
+			<route>
+				<flow-ref name="check-in-flights-management" doc:name="check-in-flights-management" />
+			</route>
+			<route>
+				<flow-ref name="register-passenger-data" doc:name="register-passenger-data" />
+			</route>
+			<route>
+				<flow-ref name="create-payment-for-bags" doc:name="create-payment-for-bags" />
+			</route>
+		</scatter-gather>
+		<error-handler>
+		  <on-error-propagate type="MULE:COMPOSITE_ROUTING">
+		    <set-variable variableName="successfulRouteIndexes" value="#[(error.errorMessage.payload.results pluck $$ as Number)]" doc:name="successfulRouteIndexes"/>
+		    <set-variable variableName="failedRouteIndexes" value="#[(error.errorMessage.payload.failures pluck $$ as Number)]" doc:name="failedRouteIndexes"/>
+		    <set-variable variableName="compensationFlows" value="#[vars.successfulRouteIndexes map vars.allCompensationFlows[$]]" doc:name="compensationFlows"/>
+		    <flow-ref name="compensate-successful-routes-of-check-in-by-pnr" doc:name="compensate-successful-routes-of-check-in-by-pnr"/>
+		  </on-error-propagate>
+		</error-handler>    
+		</try>
+		<ee:transform>
       <ee:message>
         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
-var paypalReturn = payload
+var paypalReturn = payload['2'].payload
 ---
 {
     paymentID: paypalReturn.paymentID
@@ -33,6 +52,20 @@ var paypalReturn = payload
     </ee:transform>
     <logger level="INFO" message="Checked-in by PNR" doc:name="END"/>
   </flow>
+  <flow name="compensate-successful-routes-of-check-in-by-pnr">
+	  <foreach collection="#[vars.compensationFlows]">
+	    <flow-ref name="#[payload]" doc:name="successedFlows"/>
+	  </foreach>
+	</flow>
+	<flow name="check-in-flights-management-compensate">
+	  <logger level="INFO" message="Must compensate for successful check-in-flights-management" doc:name="Must compensate for successful check-in-flights-management"/>
+	</flow>
+	<flow name="register-passenger-data-compensate">
+	  <logger level="INFO" message="Must compensate for successful register-passenger-data" doc:name="Must compensate for successful register-passenger-data"/>
+	</flow>
+	<flow name="create-payment-for-bags-compensate">
+	  <logger level="INFO" message="Must compensate for successful create-payment-for-bags" doc:name="Must compensate for successful create-payment-for-bags"/>
+	</flow> 
   <flow name="validate-ticket-passport-matches" doc:id="c50751b5-7885-4906-baa9-01a75586bb49">
 	  <flow-ref name="get-ticket-by-pnr" doc:name="get-ticket-by-pnr"/>
 	  <choice>

@@ -10,7 +10,7 @@
     <!-- students: replace with your AP org ID -->
     <groupId>b4840237-a86b-4fa4-b4ce-bebf5b0daf00</groupId>
     <artifactId>solutions-parent-pom</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <relativePath>../parent-pom/pom.xml</relativePath>
   </parent>
   <!-- students: replace with your AP org ID -->
