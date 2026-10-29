@@ -81,14 +81,32 @@ var paypalReturn = payload['2'].payload
 	  </choice>
 	</flow>
 	<flow name="get-ticket-by-pnr">
-	  <http:request config-ref="flightsManagementSapiConfig" method="GET" path="/tickets/{PNR}" target="ticket"
-	        doc:name="FMS Get Ticket">
-	    <http:uri-params><![CDATA[#[output application/java
+	  <until-successful maxRetries="#[3]" millisBetweenRetries="#[1000]">
+	    <try>
+	      <http:request config-ref="flightsManagementSapiConfig" method="GET" path="/tickets/{PNR}" target="ticket" doc:name="FMS Get Ticket">
+	        <http:uri-params><![CDATA[#[output application/java
 	---
 	{
 	    "PNR" : vars.PNR
 	}]]]></http:uri-params>
-	  </http:request>
+	      </http:request>
+	      <error-handler>
+	        <on-error-continue enableNotifications="true" logException="true" type="HTTP:BAD_GATEWAY, HTTP:BAD_REQUEST, HTTP:NOT_FOUND">
+	          <set-variable variableName="failed" value="#[true]" doc:name="failed = true" />
+	        </on-error-continue>
+	      </error-handler>
+	    </try>
+	  </until-successful>
+	  <choice doc:name="Choice" >
+	    <when expression="#[vars.failed]">
+	      <raise-error doc:name="APP:GET_TICKET_FAILED" type="APP:GET_TICKET_FAILED" description="Failed to get ticket information"/>
+	    </when>
+	  </choice>
+	  <error-handler>
+	    <on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" type="MULE:RETRY_EXHAUSTED">
+	      <logger level="INFO" doc:name="MULE:RETRY_EXHAUSTED is occurred" message="MULE:RETRY_EXHAUSTED is occurred"/>
+	    </on-error-continue>
+	  </error-handler>
 	</flow>
 	<flow name="get-passenger-data-by-passport">
 	  <http:request target="passenger" config-ref="passengerDataSapiConfig" method="GET" path="/passengers" doc:name="Passenger API Get Passenger">

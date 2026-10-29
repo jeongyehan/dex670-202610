@@ -81,4 +81,5 @@
 - curl -ik -H "Content-Type:text/xml" -d "invalid content type" https://localhost:8081/api/cancelFlight
 - curl -ik -H "Content-Type:text/xml" -d "<CancellationNotification><PNR1>PNR123</PNR1><PassengerLastName2>Mule</PassengerLastName2></CancellationNotification>" https://localhost:8081/api/cancelFlight
 - curl -ik -X PUT -H "Content-Type: application/json" -d "{\"lastName\":\"Mule\",\"numBags\":2}" https://localhost:8081/api/v1/tickets/PNR123/checkin
-
+curl -ik -H "Content-Type:text/xml" -H "X-CORRELATION-ID: DEX670-202610" -d "<CancellationNotification><PNR>PNR456</PNR><PassengerLastName>JEONG</PassengerLastName></CancellationNotification>" https://localhost:8081/api/cancelFlight
+- curl -ik -X PUT -H "Content-Type: application/json" -d "{\"lastName\":\"Mule\",\"numBags\":2}" https://localhost:8081/api/v1/tickets/PNR123/checkin
