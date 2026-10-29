@@ -85,3 +85,6 @@ curl -ik -H "Content-Type:text/xml" -H "X-CORRELATION-ID: DEX670-202610" -d "<Ca
 - curl -ik -X PUT -H "Content-Type: application/json" -d "{\"lastName\":\"Mule\",\"numBags\":2}" https://localhost:8081/api/v1/tickets/PNR123/checkin
 - curl -ik -X PUT -H "Content-Type: application/json" -d "{ \"payerID\":\"STJ8222K092ST\", \"paymentID\": \"PAY-1B56960729604235TKQQIYVY\" }" https://localhost:8081/api/v1/tickets/PNR123/paymentApproval
 - curl -ik -X PUT -H "Content-Type: application/json" -d "{\"lastName\":\"Mule\",\"numBags\":2}" https://localhost:8081/api/v1/tickets/PNR123/checkin
+- cd $PROJECT_HOME
+- mvn -B -f bom/pom.xml archetype:generate -DarchetypeGroupId=org.mule.extensions -DarchetypeArtifactId=mule-extensions-xml-archetype -DarchetypeVersion=1.2.0 -DgroupId=b4840237-a86b-4fa4-b4ce-bebf5b0daf00 -DartifactId=resilience-mule-extension -DmuleConnectorName=resilience-mule-extension -DextensionName=resilience -Dpackage=. -DoutputDirectory=../
+- mvn -B -f bom/pom.xml archetype:generate -DarchetypeGroupId=org.mule.tools -DarchetypeArtifactId=api-gateway-custom-policy-archetype -DarchetypeVersion=1.2.0 -DgroupId=b4840237-a86b-4fa4-b4ce-bebf5b0daf00 -DartifactId=custom-message-logging-policy -Dversion=1.0.0-SNAPSHOT -Dpackage=mule-policy -DpolicyDescription="Policy for logging messages" -DpolicyName="Custom Message Logging" -DoutputDirectory=../

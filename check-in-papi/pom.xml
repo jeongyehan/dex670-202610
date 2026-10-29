@@ -37,6 +37,11 @@
 	</build>
 	<dependencies>
 		<dependency>
+		  <groupId>${student.deployment.ap.orgid}</groupId>
+		  <artifactId>resilience-mule-extension</artifactId>
+		  <classifier>mule-plugin</classifier>
+		</dependency>	
+		<dependency>
 		  <groupId>org.mule.modules</groupId>
 		  <artifactId>mule-validation-module</artifactId>
 		  <classifier>mule-plugin</classifier>
