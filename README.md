@@ -83,3 +83,5 @@
 - curl -ik -X PUT -H "Content-Type: application/json" -d "{\"lastName\":\"Mule\",\"numBags\":2}" https://localhost:8081/api/v1/tickets/PNR123/checkin
 curl -ik -H "Content-Type:text/xml" -H "X-CORRELATION-ID: DEX670-202610" -d "<CancellationNotification><PNR>PNR456</PNR><PassengerLastName>JEONG</PassengerLastName></CancellationNotification>" https://localhost:8081/api/cancelFlight
 - curl -ik -X PUT -H "Content-Type: application/json" -d "{\"lastName\":\"Mule\",\"numBags\":2}" https://localhost:8081/api/v1/tickets/PNR123/checkin
+- curl -ik -X PUT -H "Content-Type: application/json" -d "{ \"payerID\":\"STJ8222K092ST\", \"paymentID\": \"PAY-1B56960729604235TKQQIYVY\" }" https://localhost:8081/api/v1/tickets/PNR123/paymentApproval
+- curl -ik -X PUT -H "Content-Type: application/json" -d "{\"lastName\":\"Mule\",\"numBags\":2}" https://localhost:8081/api/v1/tickets/PNR123/checkin
